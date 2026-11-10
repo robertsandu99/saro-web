@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>saro-web · Tech Stack</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f1117;
+      color: #e1e4e8;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    nav {
+      width: 220px;
+      min-width: 220px;
+      background: #161b22;
+      border-right: 1px solid #30363d;
+      padding: 24px 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav .logo {
+      font-size: 15px;
+      font-weight: 700;
+      color: #58a6ff;
+      padding: 0 20px 20px;
+      border-bottom: 1px solid #30363d;
+      letter-spacing: .5px;
+    }
+
+    nav .logo span { color: #8b949e; font-weight: 400; font-size: 12px; display: block; margin-top: 2px; }
+
+    nav ul { list-style: none; padding: 12px 0; }
+
+    nav ul li a {
+      display: block;
+      padding: 8px 20px;
+      color: #8b949e;
+      text-decoration: none;
+      font-size: 13.5px;
+      border-left: 3px solid transparent;
+      transition: all .15s;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active {
+      color: #e1e4e8;
+      background: #1f262e;
+      border-left-color: #58a6ff;
+    }
+
+    nav .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #484f58;
+      padding: 14px 20px 4px;
+    }
+
+    /* ── Main content ── */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 36px 48px;
+      scroll-behavior: smooth;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #f0f6fc;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #8b949e;
+      margin-bottom: 36px;
+    }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+
+    .section h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #58a6ff;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #21262d;
+    }
+
+    /* ── Cards ── */
+    .cards { display: flex; flex-direction: column; gap: 8px; }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .card:hover { border-color: #30363d; }
+
+    .card-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .card-body { flex: 1; }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f0f6fc;
+      margin-bottom: 3px;
+    }
+
+    .card-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .card-title a:hover { color: #58a6ff; }
+
+    .card-desc {
+      font-size: 12.5px;
+      color: #8b949e;
+      line-height: 1.55;
+    }
+
+    /* ── Badges ── */
+    .badges { display: flex; gap: 6px; margin-top: 7px; flex-wrap: wrap; }
+
+    .badge {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: .3px;
+    }
+
+    .badge.free     { background: #0d4429; color: #3fb950; border: 1px solid #26a641; }
+    .badge.paid     { background: #3d1f00; color: #f0883e; border: 1px solid #9e5523; }
+    .badge.local    { background: #1a1f6e; color: #79c0ff; border: 1px solid #388bfd; }
+    .badge.required { background: #3d1500; color: #ffa657; border: 1px solid #d29922; }
+    .badge.optional { background: #21262d; color: #8b949e; border: 1px solid #30363d; }
+    .badge.installed{ background: #0d4429; color: #56d364; border: 1px solid #2ea043; }
+
+    /* ── Cost banner ── */
+    .cost-box {
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-left: 4px solid #58a6ff;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 36px;
+    }
+
+    .cost-box h3 { font-size: 13px; font-weight: 700; color: #58a6ff; margin-bottom: 10px; }
+
+    .cost-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      padding: 4px 0;
+      border-bottom: 1px solid #21262d;
+      color: #8b949e;
+    }
+
+    .cost-row:last-child { border: none; }
+    .cost-row .item { color: #e1e4e8; }
+    .cost-row .price-free { color: #3fb950; font-weight: 600; }
+    .cost-row .price-paid { color: #f0883e; font-weight: 600; }
+
+    /* ── Setup steps ── */
+    .steps { display: flex; flex-direction: column; gap: 10px; }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 14px 18px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      background: #58a6ff;
+      color: #0d1117;
+      font-size: 11px;
+      font-weight: 800;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-body { flex: 1; }
+    .step-title { font-size: 13.5px; font-weight: 600; color: #f0f6fc; margin-bottom: 3px; }
+    .step-desc { font-size: 12px; color: #8b949e; line-height: 1.5; }
+
+    code {
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      color: #79c0ff;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<nav>
+  <div class="logo">
+    saro-web
+    <span>Technology Reference</span>
+  </div>
+  <ul>
+    <li><a href="#overview" onclick="setActive(this)">Overview &amp; Costs</a></li>
+    <li><a href="#first-steps" onclick="setActive(this)">First Steps</a></li>
+  </ul>
+
+  <div class="section-label">Stack</div>
+  <ul>
+    <li><a href="#backend" onclick="setActive(this)">Backend</a></li>
+    <li><a href="#database" onclick="setActive(this)">Database</a></li>
+    <li><a href="#infrastructure" onclick="setActive(this)">Infrastructure</a></li>
+    <li><a href="#hosting" onclick="setActive(this)">Hosting</a></li>
+    <li><a href="#security" onclick="setActive(this)">Security &amp; HTTPS</a></li>
+    <li><a href="#cicd" onclick="setActive(this)">CI / CD</a></li>
+    <li><a href="#ai" onclick="setActive(this)">AI Integration</a></li>
+    <li><a href="#monitoring" onclick="setActive(this)">Monitoring</a></li>
+    <li><a href="#domain" onclick="setActive(this)">Domain</a></li>
+  </ul>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<main id="main">
+
+  <h1>saro-web · Tech Stack</h1>
+  <p class="subtitle">Sports &amp; games web platform — full technology reference</p>
+
+  <!-- Cost Overview -->
+  <div class="cost-box" id="overview">
+    <h3>Cost Overview</h3>
+    <div class="cost-row"><span class="item">Oracle Cloud VM (4 OCPUs, 24 GB RAM)</span><span class="price-free">FREE forever</span></div>
+    <div class="cost-row"><span class="item">PostgreSQL (self-hosted in Docker)</span><span class="price-free">FREE</span></div>
+    <div class="cost-row"><span class="item">Let's Encrypt SSL certificate</span><span class="price-free">FREE</span></div>
+    <div class="cost-row"><span class="item">Cloudflare CDN + DDoS protection</span><span class="price-free">FREE</span></div>
+    <div class="cost-row"><span class="item">WireGuard VPN (admin access)</span><span class="price-free">FREE</span></div>
+    <div class="cost-row"><span class="item">Google Gemini 2.5 Flash API</span><span class="price-free">FREE tier</span></div>
+    <div class="cost-row"><span class="item">GitHub + GitHub Actions</span><span class="price-free">FREE</span></div>
+    <div class="cost-row"><span class="item">Domain name (.com)</span><span class="price-paid">~$10–15 / year</span></div>
+  </div>
+
+  <!-- First Steps -->
+  <div class="section" id="first-steps">
+    <h2>First Steps (Local Setup)</h2>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Python 3.11 ✓ Already installed</div>
+          <div class="step-desc">You have Python 3.11.0. We will use this version. No action needed.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Docker Desktop ✓ Already installed</div>
+          <div class="step-desc">Docker 29.9.2 and Docker Compose v5.6.1 are ready. Make sure Docker Desktop is running before starting containers.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Poetry ✓ Already installed</div>
+          <div class="step-desc">Poetry 1.7.1 is installed. Used to manage Python dependencies and virtual environments. Run <code>poetry install</code> inside the project after setup.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Git ✓ Already installed</div>
+          <div class="step-desc">Git 2.47.1 is ready. Push your project to GitHub to enable CI/CD and free cloud deployments.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Initialize the project structure</div>
+          <div class="step-desc">Run <code>poetry init</code> inside <code>saro-web/</code> to create <code>pyproject.toml</code>, then add FastAPI, SQLAlchemy, Alembic, etc. as dependencies.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <div class="step-title">Create docker-compose.yml (local dev)</div>
+          <div class="step-desc">Define services: <code>api</code> (FastAPI), <code>db</code> (PostgreSQL), <code>nginx</code>. This same file will be reused on the Oracle Cloud server with minimal changes.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-body">
+          <div class="step-title">Create a GitHub repository</div>
+          <div class="step-desc">Push <code>saro-web</code> to GitHub. This enables GitHub Actions for automated testing and deployment to Oracle Cloud.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">8</div>
+        <div class="step-body">
+          <div class="step-title">Register Oracle Cloud free account</div>
+          <div class="step-desc">Sign up at <strong>cloud.oracle.com</strong>. Create the ARM Ampere A1 VM (4 OCPUs, 24 GB RAM). This is your free permanent server. Requires a credit card for identity verification — you will NOT be charged.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">9</div>
+        <div class="step-body">
+          <div class="step-title">Register Cloudflare (free) + buy domain</div>
+          <div class="step-desc">Buy a <code>.com</code> domain (~$10-15/yr on Porkbun or Namecheap). Point DNS to Cloudflare (free). Cloudflare gives you DDoS protection, CDN, and SSL with zero config.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">10</div>
+        <div class="step-body">
+          <div class="step-title">Deploy to Oracle Cloud</div>
+          <div class="step-desc">SSH into the VM, install Docker, copy your <code>docker-compose.yml</code>, run <code>docker compose up -d</code>. Same stack as local — instant deploy.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Backend -->
+  <div class="section" id="backend">
+    <h2>Backend</h2>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://fastapi.tiangolo.com" target="_blank">FastAPI</a></div>
+          <div class="card-desc">Python web framework. Async-first, auto-generates Swagger UI documentation at <code>/docs</code>. Very fast, type-safe via Pydantic.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge installed">Python installed</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🗄️</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://docs.sqlalchemy.org" target="_blank">SQLAlchemy 2.x (async)</a></div>
+          <div class="card-desc">ORM (Object-Relational Mapper). Lets you write Python classes instead of raw SQL. Async version works with FastAPI's async model.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge required">Required</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🔌</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://magicstack.github.io/asyncpg" target="_blank">asyncpg</a></div>
+          <div class="card-desc">Async PostgreSQL database driver. Required by SQLAlchemy to talk to PostgreSQL asynchronously.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge required">Required</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">📦</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://docs.pydantic.dev" target="_blank">Pydantic v2</a></div>
+          <div class="card-desc">Data validation and settings management. Validates API request/response schemas and reads config from environment variables.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge required">Required</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🚀</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://www.uvicorn.org" target="_blank">Uvicorn</a></div>
+          <div class="card-desc">ASGI web server. Runs the FastAPI application. Included with FastAPI. Command: <code>uvicorn app:app --host 0.0.0.0 --port 8080</code></div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge required">Required</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://alembic.sqlalchemy.org" target="_blank">Alembic</a></div>
+          <div class="card-desc">Database migration tool for SQLAlchemy. Tracks and applies schema changes (create tables, add columns) in a versioned, safe way.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge required">Required</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🔑</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://pyjwt.readthedocs.io" target="_blank">PyJWT</a></div>
+          <div class="card-desc">Creates and validates JWT tokens for user authentication. Users log in, receive a token, and send it with every request.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge required">Required</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">📋</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://python-poetry.org" target="_blank">Poetry</a></div>
+          <div class="card-desc">Python dependency and virtual environment manager. Replaces pip + requirements.txt with a cleaner <code>pyproject.toml</code>.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge installed">Installed v1.7.1</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Database -->
+  <div class="section" id="database">
+    <h2>Database</h2>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-icon">🐘</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://www.postgresql.org" target="_blank">PostgreSQL 16</a></div>
+          <div class="card-desc">Primary relational database. Runs in a Docker container locally and on Oracle Cloud. No cloud subscription needed — self-hosted, free, 200 GB available on the Oracle VM.</div>
+          <div class="badges"><span class="badge free">Free (self-hosted)</span><span class="badge local">Docker container</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🖥️</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://www.pgadmin.org" target="_blank">pgAdmin 4</a></div>
+          <div class="card-desc">Visual database management UI. Already installed. Connect to your local PostgreSQL container or the remote Oracle Cloud DB to inspect tables and run queries.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge installed">Already installed</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">☁️</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://neon.tech" target="_blank">Neon (alternative)</a></div>
+          <div class="card-desc">Managed cloud PostgreSQL if you prefer not to self-host. Free tier: 1 GB storage, no expiration, no credit card. Good backup option.</div>
+          <div class="badges"><span class="badge free">Free tier</span><span class="badge optional">Optional</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Infrastructure -->
+  <div class="section" id="infrastructure">
+    <h2>Infrastructure</h2>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-icon">🐳</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://docs.docker.com/compose" target="_blank">Docker Compose</a></div>
+          <div class="card-desc">Orchestrates all services (API, database, Nginx) with a single <code>docker-compose.yml</code> file. Same file runs locally and on the server. Command: <code>docker compose up -d</code></div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge installed">Installed v5.6.1</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🔀</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://nginx.org" target="_blank">Nginx</a></div>
+          <div class="card-desc">Reverse proxy server. Sits in front of FastAPI, handles SSL termination (HTTPS), serves static files, and routes traffic. Runs as a Docker container.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge required">Required</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Hosting -->
+  <div class="section" id="hosting">
+    <h2>Hosting</h2>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-icon">☁️</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://www.oracle.com/cloud/free" target="_blank">Oracle Cloud Always Free</a></div>
+          <div class="card-desc">Best permanent free cloud server. ARM VM with <strong>4 OCPUs + 24 GB RAM</strong>, 200 GB storage, 10 TB/month outbound bandwidth. Free forever (since 2019, stable). Requires credit card for identity — you are NOT charged.</div>
+          <div class="badges"><span class="badge free">FREE forever</span><span class="badge required">Main server</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Security -->
+  <div class="section" id="security">
+    <h2>Security &amp; HTTPS</h2>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-icon">🔒</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://www.cloudflare.com" target="_blank">Cloudflare (free tier)</a></div>
+          <div class="card-desc">Sits between the internet and your server. Provides DDoS protection, CDN (caches content globally), basic Web Application Firewall, and SSL. Hides your real server IP. Free forever.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge required">Strongly recommended</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🏅</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://letsencrypt.org" target="_blank">Let's Encrypt + Certbot</a></div>
+          <div class="card-desc">Free SSL/TLS certificates for HTTPS. Auto-renews every 90 days via Certbot. This is what powers the padlock in the browser URL bar. Free forever.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge required">Required for HTTPS</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://www.wireguard.com" target="_blank">WireGuard VPN</a></div>
+          <div class="card-desc">Self-hosted VPN on the Oracle server. Used for <strong>admin access only</strong> — SSH is blocked from the internet and only accessible via VPN. End users do NOT need VPN to visit the website.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge required">Admin access</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🚫</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://github.com/fail2ban/fail2ban" target="_blank">Fail2ban</a></div>
+          <div class="card-desc">Monitors server logs and auto-bans IP addresses with repeated failed login attempts. Protects against brute force attacks. Runs on the Oracle VM.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge optional">Recommended</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CI/CD -->
+  <div class="section" id="cicd">
+    <h2>CI / CD</h2>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-icon">🐙</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://github.com" target="_blank">GitHub</a></div>
+          <div class="card-desc">Code hosting, version control, and collaboration. Free for public and private repositories. The central hub for the project.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge installed">Git installed</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">⚙️</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://github.com/features/actions" target="_blank">GitHub Actions</a></div>
+          <div class="card-desc">Automated pipelines defined in <code>.yml</code> files. On every push: runs tests, builds Docker image, deploys to Oracle Cloud. Free (2,000 min/month on private repos, unlimited on public).</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge optional">Recommended</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- AI -->
+  <div class="section" id="ai">
+    <h2>AI Integration</h2>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-icon">🧮</div>
+        <div class="card-body">
+          <div class="card-title">Custom Algorithm (Team Generator)</div>
+          <div class="card-desc">For the team balancing feature, a Python algorithm (weighted shuffling, constraint satisfaction) is better than AI — faster, deterministic, free, no API calls. No external service needed.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge required">For team generation</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">✨</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank">Google Gemini 2.5 Flash API</a></div>
+          <div class="card-desc">Free tier: free input/output tokens, ~500 requests/day. Good for LLM features (chat, stats summaries, recommendations). Note: on the free tier, Google may use your data for training.</div>
+          <div class="badges"><span class="badge free">Free tier</span><span class="badge optional">For LLM features</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🦙</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://ollama.com" target="_blank">Ollama (self-hosted LLMs)</a></div>
+          <div class="card-desc">Runs open-source AI models (Llama 3, Mistral, Gemma) locally on the Oracle VM. The 24 GB RAM is enough for 7B models. Completely free, no API key, full data privacy.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge optional">Privacy-first option</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Monitoring -->
+  <div class="section" id="monitoring">
+    <h2>Monitoring</h2>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-icon">📡</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://uptimerobot.com" target="_blank">UptimeRobot</a></div>
+          <div class="card-desc">Pings your website every 5 minutes and sends an email/notification if it goes down. Free tier: 50 monitors. No server setup needed.</div>
+          <div class="badges"><span class="badge free">Free</span><span class="badge optional">Recommended</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://grafana.com/products/cloud" target="_blank">Grafana Cloud (free tier)</a></div>
+          <div class="card-desc">Dashboards for metrics and logs. Free tier includes 10 GB logs and 50 GB metrics per month. Useful for tracking API response times and errors in production.</div>
+          <div class="badges"><span class="badge free">Free tier</span><span class="badge optional">Optional</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Domain -->
+  <div class="section" id="domain">
+    <h2>Domain</h2>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <div class="card-body">
+          <div class="card-title"><a href="https://porkbun.com" target="_blank">Porkbun</a> / <a href="https://www.namecheap.com" target="_blank">Namecheap</a></div>
+          <div class="card-desc">Domain registrars. Buy a <code>.com</code> domain for ~$10-15/year. This is the only cost in the entire stack. After purchase, point DNS to Cloudflare (free) for automatic security and CDN.</div>
+          <div class="badges"><span class="badge paid">~$10–15/year</span><span class="badge required">Only paid item</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // Highlight active sidebar link on scroll
+  const sections = document.querySelectorAll('.section, .cost-box');
+  const links = document.querySelectorAll('nav a');
+
+  function setActive(el) {
+    links.forEach(l => l.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        links.forEach(l => {
+          l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { root: document.getElementById('main'), threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Set first link active on load
+  if (links[0]) links[0].classList.add('active');
+</script>
+
+</body>
+</html>

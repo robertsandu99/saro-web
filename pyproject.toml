@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "saroweb"
+version = "0.1.0"
+description = "Sports and games web platform"
+authors = ["Robert Sandu <san_roby@yahoo.com>"]
+readme = "README.md"
+packages = [{include = "saroweb"}]
+
+# ── Runtime dependencies ──────────────────────────────────────────────────────
+[tool.poetry.dependencies]
+python          = "^3.11"
+fastapi         = "^0.141.1"
+uvicorn         = {extras = ["standard"], version = "^0.54.0"}
+sqlalchemy      = {extras = ["asyncio"], version = "^2.1.8"}
+asyncpg         = "^0.32.0"
+pydantic        = "^2.14.3"
+pydantic-settings = "^2.16.2"
+alembic         = "^1.20.1"
+pyjwt           = "^2.15.1"
+python-multipart = "^0.0.33"
+aiofiles        = "^25.1.0"
+
+# ── Development dependencies ──────────────────────────────────────────────────
+[tool.poetry.group.dev.dependencies]
+pytest          = "^8.4"
+pytest-asyncio  = "^1.4.1"
+pytest-cov      = "^6.0.0"
+httpx           = "^0.28.1"
+black           = "^25.0.0"
+isort           = "^5.13.2"
+mypy            = "^1.13.0"
+
+# ── Build system ──────────────────────────────────────────────────────────────
+[build-system]
+requires      = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+# ── Tool configuration ────────────────────────────────────────────────────────
+[tool.black]
+line-length    = 88
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+python_version         = "3.11"
+strict                 = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths    = ["tests"]
+
+[tool.coverage.run]
+source  = ["saroweb"]
+omit    = ["tests/*", "migrations/*"]
