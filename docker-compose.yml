@@ -1,0 +1,92 @@
+services:
+
+  # ── PostgreSQL database ───────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    # postgres:16-alpine — official PostgreSQL 16 image built on Alpine Linux
+    # Alpine is a minimal Linux distro (~5MB) — smaller and faster than the default Debian image
+    restart: unless-stopped
+    # unless-stopped — restart the container automatically if it crashes or the machine reboots,
+    #                  but NOT if you manually ran 'docker compose stop'
+    environment:
+      POSTGRES_USER: saroweb       # creates this database user on first startup
+      POSTGRES_PASSWORD: saroweb   # password for that user
+      POSTGRES_DB: saroweb         # creates this database on first startup
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # postgres_data — a named Docker volume. This is where PostgreSQL writes its data files.
+      # Named volumes survive 'docker compose down'. Your data is NOT lost between restarts.
+      # Only 'docker compose down -v' deletes the volume (and all data). Never run that in production.
+    ports:
+      - "127.0.0.1:5433:5432"
+      # "127.0.0.1:5433:5432" — exposes PostgreSQL on localhost:5433 of your Windows machine
+      # Host port 5433 avoids conflict with any local PostgreSQL already running on 5432
+      # 127.0.0.1 binding means ONLY your own machine can reach it — not your local network, not internet
+      # This lets Windows pgAdmin connect via localhost:5433 (safe for local dev)
+      # On the production cloud VM, remove this ports section entirely — PostgreSQL stays internal only
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U saroweb"]
+      # pg_isready — PostgreSQL's own built-in tool that checks if the server is accepting connections
+      interval: 5s    # check every 5 seconds
+      timeout: 5s     # give the check 5 seconds to respond
+      retries: 10     # mark as unhealthy after 10 consecutive failures
+
+
+  # ── FastAPI application ───────────────────────────────────────────────────
+  app:
+    build: .
+    # build: . — build the image from the Dockerfile in the current directory
+    # Every time you run 'docker compose up --build' it rebuilds from the Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      # "8080:8080" — maps port 8080 on your Windows machine to port 8080 inside the container
+      # format: "host_port:container_port"
+    env_file: .env
+    # env_file — loads all variables from .env into the container's environment
+    # This passes SARO_SECRET_KEY, SARO_DEBUG, etc. from your local .env file
+    environment:
+      # This OVERRIDES the SARO_DB_CONN from .env
+      # Reason: in .env, the host is 'localhost' (for running directly on your machine)
+      #         inside Docker, 'localhost' means the container itself — PostgreSQL is not there
+      #         'db' is the name of the postgres service above — Docker resolves it automatically
+      SARO_DB_CONN: postgresql+asyncpg://saroweb:saroweb@db:5432/saroweb
+    depends_on:
+      db:
+        condition: service_healthy
+      # service_healthy — Docker waits until the db healthcheck passes BEFORE starting this container
+      # Without this, the app would start, try to connect to PostgreSQL, fail, and crash
+    command: >
+      sh -c "alembic upgrade head && uvicorn saroweb.app:app --host 0.0.0.0 --port 8080"
+    # command overrides the CMD in the Dockerfile for local development
+    # Step 1: alembic upgrade head — runs all pending database migrations
+    #         This creates/updates tables before the app starts accepting requests
+    # Step 2: uvicorn ... — starts the web server after migrations succeed
+    # The && means: only start uvicorn if migrations succeeded (no partial state)
+
+
+  # ── pgAdmin — visual database manager ────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:8
+    # pgAdmin 4 version 8 — web-based GUI for managing PostgreSQL
+    # Access it at http://localhost:5050 after 'docker compose up'
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@saroweb.local    # login email for pgAdmin web UI
+      PGADMIN_DEFAULT_PASSWORD: admin               # login password (local dev only — fine to be simple)
+    ports:
+      - "5050:80"
+      # pgAdmin listens on port 80 inside the container
+      # mapped to 5050 on your machine so it doesn't conflict with anything
+    depends_on:
+      - db
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      # pgadmin_data — saves your pgAdmin settings (saved servers, preferences)
+      # so you don't have to re-add the PostgreSQL server every time you restart
+
+
+# ── Named volumes ─────────────────────────────────────────────────────────
+volumes:
+  postgres_data:   # persists all PostgreSQL data between container restarts
+  pgadmin_data:    # persists pgAdmin configuration between container restarts
