@@ -72,7 +72,7 @@ services:
     # Access it at http://localhost:5050 after 'docker compose up'
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@saroweb.local    # login email for pgAdmin web UI
+      PGADMIN_DEFAULT_EMAIL: admin@saroweb.com      # login email for pgAdmin web UI
       PGADMIN_DEFAULT_PASSWORD: admin               # login password (local dev only — fine to be simple)
     ports:
       - "5050:80"
