@@ -8,8 +8,8 @@ from saroweb.database import Base
 from saroweb.settings import get_settings
 
 # Import all models here so Alembic can detect schema changes automatically.
-# Add new model imports as you create them:
-# from saroweb.models import user, team  # noqa: F401
+# models/__init__.py re-exports Squad, Player and Team — one import is enough.
+import saroweb.models  # noqa: F401
 
 config = context.config
 

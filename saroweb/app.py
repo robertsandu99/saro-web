@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from saroweb.apis import health_api
+from saroweb.apis import health_api, player_api, squad_api, team_api
 from saroweb.settings import get_settings
 from saroweb.utils.exceptions import (
     AppError,
@@ -40,6 +40,9 @@ def _register_exception_handlers(app: FastAPI) -> None:
 
 def _register_routers(app: FastAPI) -> None:
     app.include_router(health_api.router)
+    app.include_router(squad_api.router)
+    app.include_router(player_api.router)
+    app.include_router(team_api.router)
 
 
 def create_app() -> FastAPI:

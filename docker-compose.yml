@@ -86,6 +86,24 @@ services:
       # so you don't have to re-add the PostgreSQL server every time you restart
 
 
+  # ── PostgreSQL test database ──────────────────────────────────────────────
+  db-test:
+    image: postgres:16-alpine
+    # separate DB for running pytest — completely isolated from development data
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: saroweb
+      POSTGRES_PASSWORD: saroweb
+      POSTGRES_DB: saroweb_test     # name contains "test" — required by conftest guard
+    ports:
+      - "127.0.0.1:5434:5432"      # 5434 on host to avoid conflict with db (5433) and local PG (5432)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U saroweb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
 # ── Named volumes ─────────────────────────────────────────────────────────
 volumes:
   postgres_data:   # persists all PostgreSQL data between container restarts
